@@ -168,7 +168,7 @@ Mock.mock('/api/auth/permission/permissions', 'post', () => ({
   message: '成功'
 }))
 
-Mock.mock('api/data/container/getContainerList', 'post', () => ({
+Mock.mock('api/data/container/getContainerColumn', 'post', () => ({
   data: {
     ContainerColumn: [
       { prop: 'name', label: '厂商' },

@@ -98,9 +98,15 @@ export interface Container {
     brand: string
     protocol: string
     framework: string
+    description: string
   }
-  electricalDiagram: string
-  transportationnPlan: string
+  electrical: {
+    diagram: string
+    description: string
+  }
+  transportation: {
+    plan: string
+  }
   salsAfterService: {
     installWay: string
     accessories: string[]

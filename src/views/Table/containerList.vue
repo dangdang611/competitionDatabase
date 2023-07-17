@@ -62,16 +62,43 @@
           <el-icon :size="14"> <Search /> </el-icon>
           <span style="margin-right: 2px">查询</span></el-button
         >
+        <!-- <el-button circle @click="onSubmit">
+          <el-icon> <Plus /> </el-icon>
+        </el-button>
+        <el-button circle @click="compareVisible = true">
+          <el-icon><Download /></el-icon
+        ></el-button>
+        <el-button circle type="success" @click="onSubmit">
+          <el-icon> <Histogram /></el-icon>
+        </el-button> -->
+        <el-button @click="onSubmit">
+          <el-icon :size="14"> <Plus /> </el-icon>
+          <span style="margin-right: 2px">新建</span></el-button
+        >
+        <el-button @click="onSubmit">
+          <el-icon :size="14"> <Download /> </el-icon>
+          <span style="margin-right: 2px">导出</span></el-button
+        >
+        <el-button type="success" @click="onSubmit">
+          <el-icon :size="14"> <Histogram /> </el-icon>
+          <span style="margin-right: 2px">对比</span></el-button
+        >
+        <el-button type="warning" @click="toggleSelection()">
+          <el-icon :size="14"><Minus /></el-icon>
+          <span style="margin-right: 2px">清除</span></el-button
+        >
       </el-form-item>
     </el-form>
     <el-table
-      ref="filterTableRef"
+      ref="cellTableRef"
       border
       stripe
       class="table-list"
       :data="state.tableData.filter((data) => !state.search || data.name.toLowerCase().includes(state.search.toLowerCase()))"
       style="width: 100%"
+      @selection-change="handleSelectionChange"
     >
+      <el-table-column type="selection" width="55" align="center" />
       <el-table-column prop="name" label="厂商" width="120" align="center" fixed="left" />
       <el-table-column prop="type" label="型号" width="150" align="center" fixed="left" />
       <el-table-column
@@ -233,529 +260,532 @@
 import { computed, ref, reactive, onMounted } from 'vue'
 import { Cell } from '@/interface/index'
 import Detail from '@/components/AllTable/Container/detail.vue'
+import { ElTable } from 'element-plus'
+
+const orignalData = [
+  {
+    name: '宁德时代',
+    type: 'EnerC',
+    vision: 1,
+    cell: {
+      capacity: 280,
+      rate: 0.5
+    },
+    pack: {
+      configuration: {
+        parallel: 1,
+        series: 28
+      },
+      ipLevel: 54
+    },
+    rack: {
+      packNum: 8,
+      coolingConcept: 1
+    },
+    rackNum: 8,
+    normalCapacity: 3.7,
+    size: {
+      width: 6089,
+      height: 2540,
+      deep: 1980
+    },
+    weight: 35,
+    ipLevel: 54,
+    corrosionProofLevel: 5,
+    operationTemperature: {
+      low: -30,
+      high: 55
+    },
+    altitude: 3000,
+    cycle: 7000,
+    fireproof: 2,
+    lifetime: 20,
+    // 0：DC侧，1：DC+AC侧
+    isDC: 0,
+    price: 1.4,
+    deliveryCycle: 7,
+    ceritification: ['UL1973', 'UL9840A']
+  },
+  {
+    name: '宁德时代',
+    type: 'EnerC',
+    vision: 1,
+    cell: {
+      capacity: 280,
+      rate: 0.5
+    },
+    pack: {
+      configuration: {
+        parallel: 1,
+        series: 28
+      },
+      ipLevel: 54
+    },
+    rack: {
+      packNum: 8,
+      coolingConcept: 1
+    },
+    rackNum: 8,
+    normalCapacity: 3.7,
+    size: {
+      width: 6089,
+      height: 2540,
+      deep: 1980
+    },
+    weight: 35,
+    ipLevel: 54,
+    corrosionProofLevel: 5,
+    operationTemperature: {
+      low: -30,
+      high: 55
+    },
+    altitude: 3000,
+    cycle: 7000,
+    fireproof: 2,
+    lifetime: 20,
+    // 0：DC侧，1：DC+AC侧
+    isDC: 0,
+    price: 1.4,
+    deliveryCycle: 7,
+    ceritification: ['UL1973', 'UL9840A']
+  },
+  {
+    name: '宁德时代',
+    type: 'EnerC',
+    vision: 1,
+    cell: {
+      capacity: 280,
+      rate: 0.5
+    },
+    pack: {
+      configuration: {
+        parallel: 1,
+        series: 28
+      },
+      ipLevel: 54
+    },
+    rack: {
+      packNum: 8,
+      coolingConcept: 1
+    },
+    rackNum: 8,
+    normalCapacity: 3.7,
+    size: {
+      width: 6089,
+      height: 2540,
+      deep: 1980
+    },
+    weight: 35,
+    ipLevel: 54,
+    corrosionProofLevel: 5,
+    operationTemperature: {
+      low: -30,
+      high: 55
+    },
+    altitude: 3000,
+    cycle: 7000,
+    fireproof: 2,
+    lifetime: 20,
+    // 0：DC侧，1：DC+AC侧
+    isDC: 0,
+    price: 1.4,
+    deliveryCycle: 7,
+    ceritification: ['UL1973', 'UL9840A']
+  },
+  {
+    name: '宁德时代',
+    type: 'EnerC',
+    vision: 1,
+    cell: {
+      capacity: 280,
+      rate: 0.5
+    },
+    pack: {
+      configuration: {
+        parallel: 1,
+        series: 28
+      },
+      ipLevel: 54
+    },
+    rack: {
+      packNum: 8,
+      coolingConcept: 1
+    },
+    rackNum: 8,
+    normalCapacity: 3.7,
+    size: {
+      width: 6089,
+      height: 2540,
+      deep: 1980
+    },
+    weight: 35,
+    ipLevel: 54,
+    corrosionProofLevel: 5,
+    operationTemperature: {
+      low: -30,
+      high: 55
+    },
+    altitude: 3000,
+    cycle: 7000,
+    fireproof: 2,
+    lifetime: 20,
+    // 0：DC侧，1：DC+AC侧
+    isDC: 0,
+    price: 1.4,
+    deliveryCycle: 7,
+    ceritification: ['UL1973', 'UL9840A']
+  },
+  {
+    name: '宁德时代',
+    type: 'EnerC',
+    vision: 1,
+    cell: {
+      capacity: 280,
+      rate: 0.5
+    },
+    pack: {
+      configuration: {
+        parallel: 1,
+        series: 28
+      },
+      ipLevel: 54
+    },
+    rack: {
+      packNum: 8,
+      coolingConcept: 1
+    },
+    rackNum: 8,
+    normalCapacity: 3.7,
+    size: {
+      width: 6089,
+      height: 2540,
+      deep: 1980
+    },
+    weight: 35,
+    ipLevel: 54,
+    corrosionProofLevel: 5,
+    operationTemperature: {
+      low: -30,
+      high: 55
+    },
+    altitude: 3000,
+    cycle: 7000,
+    fireproof: 2,
+    lifetime: 20,
+    // 0：DC侧，1：DC+AC侧
+    isDC: 0,
+    price: 1.4,
+    deliveryCycle: 7,
+    ceritification: ['UL1973', 'UL9840A']
+  },
+  {
+    name: '宁德时代',
+    type: 'EnerC',
+    vision: 1,
+    cell: {
+      capacity: 280,
+      rate: 0.5
+    },
+    pack: {
+      configuration: {
+        parallel: 1,
+        series: 28
+      },
+      ipLevel: 54
+    },
+    rack: {
+      packNum: 8,
+      coolingConcept: 1
+    },
+    rackNum: 8,
+    normalCapacity: 3.7,
+    size: {
+      width: 6089,
+      height: 2540,
+      deep: 1980
+    },
+    weight: 35,
+    ipLevel: 54,
+    corrosionProofLevel: 5,
+    operationTemperature: {
+      low: -30,
+      high: 55
+    },
+    altitude: 3000,
+    cycle: 7000,
+    fireproof: 2,
+    lifetime: 20,
+    // 0：DC侧，1：DC+AC侧
+    isDC: 0,
+    price: 1.4,
+    deliveryCycle: 7,
+    ceritification: ['UL1973', 'UL9840A']
+  },
+  {
+    name: '宁德时代',
+    type: 'EnerC',
+    vision: 1,
+    cell: {
+      capacity: 280,
+      rate: 0.5
+    },
+    pack: {
+      configuration: {
+        parallel: 1,
+        series: 28
+      },
+      ipLevel: 54
+    },
+    rack: {
+      packNum: 8,
+      coolingConcept: 1
+    },
+    rackNum: 8,
+    normalCapacity: 3.7,
+    size: {
+      width: 6089,
+      height: 2540,
+      deep: 1980
+    },
+    weight: 35,
+    ipLevel: 54,
+    corrosionProofLevel: 5,
+    operationTemperature: {
+      low: -30,
+      high: 55
+    },
+    altitude: 3000,
+    cycle: 7000,
+    fireproof: 2,
+    lifetime: 20,
+    // 0：DC侧，1：DC+AC侧
+    isDC: 0,
+    price: 1.4,
+    deliveryCycle: 7,
+    ceritification: ['UL1973', 'UL9840A']
+  },
+  {
+    name: '宁德时代',
+    type: 'EnerC',
+    vision: 1,
+    cell: {
+      capacity: 280,
+      rate: 0.5
+    },
+    pack: {
+      configuration: {
+        parallel: 1,
+        series: 28
+      },
+      ipLevel: 54
+    },
+    rack: {
+      packNum: 8,
+      coolingConcept: 1
+    },
+    rackNum: 8,
+    normalCapacity: 3.7,
+    size: {
+      width: 6089,
+      height: 2540,
+      deep: 1980
+    },
+    weight: 35,
+    ipLevel: 54,
+    corrosionProofLevel: 5,
+    operationTemperature: {
+      low: -30,
+      high: 55
+    },
+    altitude: 3000,
+    cycle: 7000,
+    fireproof: 2,
+    lifetime: 20,
+    // 0：DC侧，1：DC+AC侧
+    isDC: 0,
+    price: 1.4,
+    deliveryCycle: 7,
+    ceritification: ['UL1973', 'UL9840A']
+  },
+  {
+    name: '宁德时代',
+    type: 'EnerC',
+    vision: 1,
+    cell: {
+      capacity: 280,
+      rate: 0.5
+    },
+    pack: {
+      configuration: {
+        parallel: 1,
+        series: 28
+      },
+      ipLevel: 54
+    },
+    rack: {
+      packNum: 8,
+      coolingConcept: 1
+    },
+    rackNum: 8,
+    normalCapacity: 3.7,
+    size: {
+      width: 6089,
+      height: 2540,
+      deep: 1980
+    },
+    weight: 35,
+    ipLevel: 54,
+    corrosionProofLevel: 5,
+    operationTemperature: {
+      low: -30,
+      high: 55
+    },
+    altitude: 3000,
+    cycle: 7000,
+    fireproof: 2,
+    lifetime: 20,
+    // 0：DC侧，1：DC+AC侧
+    isDC: 0,
+    price: 1.4,
+    deliveryCycle: 7,
+    ceritification: ['UL1973', 'UL9840A']
+  },
+  {
+    name: '宁德时代',
+    type: 'EnerC',
+    vision: 1,
+    cell: {
+      capacity: 280,
+      rate: 0.5
+    },
+    pack: {
+      configuration: {
+        parallel: 1,
+        series: 28
+      },
+      ipLevel: 54
+    },
+    rack: {
+      packNum: 8,
+      coolingConcept: 1
+    },
+    rackNum: 8,
+    normalCapacity: 3.7,
+    size: {
+      width: 6089,
+      height: 2540,
+      deep: 1980
+    },
+    weight: 35,
+    ipLevel: 54,
+    corrosionProofLevel: 5,
+    operationTemperature: {
+      low: -30,
+      high: 55
+    },
+    altitude: 3000,
+    cycle: 7000,
+    fireproof: 2,
+    lifetime: 20,
+    // 0：DC侧，1：DC+AC侧
+    isDC: 0,
+    price: 1.4,
+    deliveryCycle: 7,
+    ceritification: ['UL1973', 'UL9840A']
+  },
+  {
+    name: '宁德时代',
+    type: 'EnerC',
+    vision: 1,
+    cell: {
+      capacity: 280,
+      rate: 0.5
+    },
+    pack: {
+      configuration: {
+        parallel: 1,
+        series: 28
+      },
+      ipLevel: 54
+    },
+    rack: {
+      packNum: 8,
+      coolingConcept: 1
+    },
+    rackNum: 8,
+    normalCapacity: 3.7,
+    size: {
+      width: 6089,
+      height: 2540,
+      deep: 1980
+    },
+    weight: 35,
+    ipLevel: 54,
+    corrosionProofLevel: 5,
+    operationTemperature: {
+      low: -30,
+      high: 55
+    },
+    altitude: 3000,
+    cycle: 7000,
+    fireproof: 2,
+    lifetime: 20,
+    // 0：DC侧，1：DC+AC侧
+    isDC: 0,
+    price: 1.4,
+    deliveryCycle: 7,
+    ceritification: ['UL1973', 'UL9840A']
+  },
+  {
+    name: '宁德时代',
+    type: 'EnerC',
+    vision: 1,
+    cell: {
+      capacity: 280,
+      rate: 0.5
+    },
+    pack: {
+      configuration: {
+        parallel: 1,
+        series: 28
+      },
+      ipLevel: 54
+    },
+    rack: {
+      packNum: 8,
+      coolingConcept: 1
+    },
+    rackNum: 8,
+    normalCapacity: 3.7,
+    size: {
+      width: 6089,
+      height: 2540,
+      deep: 1980
+    },
+    weight: 35,
+    ipLevel: 54,
+    corrosionProofLevel: 5,
+    operationTemperature: {
+      low: -30,
+      high: 55
+    },
+    altitude: 3000,
+    cycle: 7000,
+    fireproof: 2,
+    lifetime: 20,
+    // 0：DC侧，1：DC+AC侧
+    isDC: 0,
+    price: 1.4,
+    deliveryCycle: 7,
+    ceritification: ['UL1973', 'UL9840A']
+  }
+]
 
 // 思考 ref 响应式和 reactive 响应式的区别； 修改对象属性值，是否会刷新数据
 // const router = useRouter()
-const filterTableRef = ref()
+const cellTableRef = ref<InstanceType<typeof ElTable>>()
 const state = reactive({
-  tableData: [
-    {
-      name: '宁德时代',
-      type: 'EnerC',
-      vision: 1,
-      cell: {
-        capacity: 280,
-        rate: 0.5
-      },
-      pack: {
-        configuration: {
-          parallel: 1,
-          series: 28
-        },
-        ipLevel: 54
-      },
-      rack: {
-        packNum: 8,
-        coolingConcept: 1
-      },
-      rackNum: 8,
-      normalCapacity: 3.7,
-      size: {
-        width: 6089,
-        height: 2540,
-        deep: 1980
-      },
-      weight: 35,
-      ipLevel: 54,
-      corrosionProofLevel: 5,
-      operationTemperature: {
-        low: -30,
-        high: 55
-      },
-      altitude: 3000,
-      cycle: 7000,
-      fireproof: 2,
-      lifetime: 20,
-      // 0：DC侧，1：DC+AC侧
-      isDC: 0,
-      price: 1.4,
-      deliveryCycle: 7,
-      ceritification: ['UL1973', 'UL9840A']
-    },
-    {
-      name: '宁德时代',
-      type: 'EnerC',
-      vision: 1,
-      cell: {
-        capacity: 280,
-        rate: 0.5
-      },
-      pack: {
-        configuration: {
-          parallel: 1,
-          series: 28
-        },
-        ipLevel: 54
-      },
-      rack: {
-        packNum: 8,
-        coolingConcept: 1
-      },
-      rackNum: 8,
-      normalCapacity: 3.7,
-      size: {
-        width: 6089,
-        height: 2540,
-        deep: 1980
-      },
-      weight: 35,
-      ipLevel: 54,
-      corrosionProofLevel: 5,
-      operationTemperature: {
-        low: -30,
-        high: 55
-      },
-      altitude: 3000,
-      cycle: 7000,
-      fireproof: 2,
-      lifetime: 20,
-      // 0：DC侧，1：DC+AC侧
-      isDC: 0,
-      price: 1.4,
-      deliveryCycle: 7,
-      ceritification: ['UL1973', 'UL9840A']
-    },
-    {
-      name: '宁德时代',
-      type: 'EnerC',
-      vision: 1,
-      cell: {
-        capacity: 280,
-        rate: 0.5
-      },
-      pack: {
-        configuration: {
-          parallel: 1,
-          series: 28
-        },
-        ipLevel: 54
-      },
-      rack: {
-        packNum: 8,
-        coolingConcept: 1
-      },
-      rackNum: 8,
-      normalCapacity: 3.7,
-      size: {
-        width: 6089,
-        height: 2540,
-        deep: 1980
-      },
-      weight: 35,
-      ipLevel: 54,
-      corrosionProofLevel: 5,
-      operationTemperature: {
-        low: -30,
-        high: 55
-      },
-      altitude: 3000,
-      cycle: 7000,
-      fireproof: 2,
-      lifetime: 20,
-      // 0：DC侧，1：DC+AC侧
-      isDC: 0,
-      price: 1.4,
-      deliveryCycle: 7,
-      ceritification: ['UL1973', 'UL9840A']
-    },
-    {
-      name: '宁德时代',
-      type: 'EnerC',
-      vision: 1,
-      cell: {
-        capacity: 280,
-        rate: 0.5
-      },
-      pack: {
-        configuration: {
-          parallel: 1,
-          series: 28
-        },
-        ipLevel: 54
-      },
-      rack: {
-        packNum: 8,
-        coolingConcept: 1
-      },
-      rackNum: 8,
-      normalCapacity: 3.7,
-      size: {
-        width: 6089,
-        height: 2540,
-        deep: 1980
-      },
-      weight: 35,
-      ipLevel: 54,
-      corrosionProofLevel: 5,
-      operationTemperature: {
-        low: -30,
-        high: 55
-      },
-      altitude: 3000,
-      cycle: 7000,
-      fireproof: 2,
-      lifetime: 20,
-      // 0：DC侧，1：DC+AC侧
-      isDC: 0,
-      price: 1.4,
-      deliveryCycle: 7,
-      ceritification: ['UL1973', 'UL9840A']
-    },
-    {
-      name: '宁德时代',
-      type: 'EnerC',
-      vision: 1,
-      cell: {
-        capacity: 280,
-        rate: 0.5
-      },
-      pack: {
-        configuration: {
-          parallel: 1,
-          series: 28
-        },
-        ipLevel: 54
-      },
-      rack: {
-        packNum: 8,
-        coolingConcept: 1
-      },
-      rackNum: 8,
-      normalCapacity: 3.7,
-      size: {
-        width: 6089,
-        height: 2540,
-        deep: 1980
-      },
-      weight: 35,
-      ipLevel: 54,
-      corrosionProofLevel: 5,
-      operationTemperature: {
-        low: -30,
-        high: 55
-      },
-      altitude: 3000,
-      cycle: 7000,
-      fireproof: 2,
-      lifetime: 20,
-      // 0：DC侧，1：DC+AC侧
-      isDC: 0,
-      price: 1.4,
-      deliveryCycle: 7,
-      ceritification: ['UL1973', 'UL9840A']
-    },
-    {
-      name: '宁德时代',
-      type: 'EnerC',
-      vision: 1,
-      cell: {
-        capacity: 280,
-        rate: 0.5
-      },
-      pack: {
-        configuration: {
-          parallel: 1,
-          series: 28
-        },
-        ipLevel: 54
-      },
-      rack: {
-        packNum: 8,
-        coolingConcept: 1
-      },
-      rackNum: 8,
-      normalCapacity: 3.7,
-      size: {
-        width: 6089,
-        height: 2540,
-        deep: 1980
-      },
-      weight: 35,
-      ipLevel: 54,
-      corrosionProofLevel: 5,
-      operationTemperature: {
-        low: -30,
-        high: 55
-      },
-      altitude: 3000,
-      cycle: 7000,
-      fireproof: 2,
-      lifetime: 20,
-      // 0：DC侧，1：DC+AC侧
-      isDC: 0,
-      price: 1.4,
-      deliveryCycle: 7,
-      ceritification: ['UL1973', 'UL9840A']
-    },
-    {
-      name: '宁德时代',
-      type: 'EnerC',
-      vision: 1,
-      cell: {
-        capacity: 280,
-        rate: 0.5
-      },
-      pack: {
-        configuration: {
-          parallel: 1,
-          series: 28
-        },
-        ipLevel: 54
-      },
-      rack: {
-        packNum: 8,
-        coolingConcept: 1
-      },
-      rackNum: 8,
-      normalCapacity: 3.7,
-      size: {
-        width: 6089,
-        height: 2540,
-        deep: 1980
-      },
-      weight: 35,
-      ipLevel: 54,
-      corrosionProofLevel: 5,
-      operationTemperature: {
-        low: -30,
-        high: 55
-      },
-      altitude: 3000,
-      cycle: 7000,
-      fireproof: 2,
-      lifetime: 20,
-      // 0：DC侧，1：DC+AC侧
-      isDC: 0,
-      price: 1.4,
-      deliveryCycle: 7,
-      ceritification: ['UL1973', 'UL9840A']
-    },
-    {
-      name: '宁德时代',
-      type: 'EnerC',
-      vision: 1,
-      cell: {
-        capacity: 280,
-        rate: 0.5
-      },
-      pack: {
-        configuration: {
-          parallel: 1,
-          series: 28
-        },
-        ipLevel: 54
-      },
-      rack: {
-        packNum: 8,
-        coolingConcept: 1
-      },
-      rackNum: 8,
-      normalCapacity: 3.7,
-      size: {
-        width: 6089,
-        height: 2540,
-        deep: 1980
-      },
-      weight: 35,
-      ipLevel: 54,
-      corrosionProofLevel: 5,
-      operationTemperature: {
-        low: -30,
-        high: 55
-      },
-      altitude: 3000,
-      cycle: 7000,
-      fireproof: 2,
-      lifetime: 20,
-      // 0：DC侧，1：DC+AC侧
-      isDC: 0,
-      price: 1.4,
-      deliveryCycle: 7,
-      ceritification: ['UL1973', 'UL9840A']
-    },
-    {
-      name: '宁德时代',
-      type: 'EnerC',
-      vision: 1,
-      cell: {
-        capacity: 280,
-        rate: 0.5
-      },
-      pack: {
-        configuration: {
-          parallel: 1,
-          series: 28
-        },
-        ipLevel: 54
-      },
-      rack: {
-        packNum: 8,
-        coolingConcept: 1
-      },
-      rackNum: 8,
-      normalCapacity: 3.7,
-      size: {
-        width: 6089,
-        height: 2540,
-        deep: 1980
-      },
-      weight: 35,
-      ipLevel: 54,
-      corrosionProofLevel: 5,
-      operationTemperature: {
-        low: -30,
-        high: 55
-      },
-      altitude: 3000,
-      cycle: 7000,
-      fireproof: 2,
-      lifetime: 20,
-      // 0：DC侧，1：DC+AC侧
-      isDC: 0,
-      price: 1.4,
-      deliveryCycle: 7,
-      ceritification: ['UL1973', 'UL9840A']
-    },
-    {
-      name: '宁德时代',
-      type: 'EnerC',
-      vision: 1,
-      cell: {
-        capacity: 280,
-        rate: 0.5
-      },
-      pack: {
-        configuration: {
-          parallel: 1,
-          series: 28
-        },
-        ipLevel: 54
-      },
-      rack: {
-        packNum: 8,
-        coolingConcept: 1
-      },
-      rackNum: 8,
-      normalCapacity: 3.7,
-      size: {
-        width: 6089,
-        height: 2540,
-        deep: 1980
-      },
-      weight: 35,
-      ipLevel: 54,
-      corrosionProofLevel: 5,
-      operationTemperature: {
-        low: -30,
-        high: 55
-      },
-      altitude: 3000,
-      cycle: 7000,
-      fireproof: 2,
-      lifetime: 20,
-      // 0：DC侧，1：DC+AC侧
-      isDC: 0,
-      price: 1.4,
-      deliveryCycle: 7,
-      ceritification: ['UL1973', 'UL9840A']
-    },
-    {
-      name: '宁德时代',
-      type: 'EnerC',
-      vision: 1,
-      cell: {
-        capacity: 280,
-        rate: 0.5
-      },
-      pack: {
-        configuration: {
-          parallel: 1,
-          series: 28
-        },
-        ipLevel: 54
-      },
-      rack: {
-        packNum: 8,
-        coolingConcept: 1
-      },
-      rackNum: 8,
-      normalCapacity: 3.7,
-      size: {
-        width: 6089,
-        height: 2540,
-        deep: 1980
-      },
-      weight: 35,
-      ipLevel: 54,
-      corrosionProofLevel: 5,
-      operationTemperature: {
-        low: -30,
-        high: 55
-      },
-      altitude: 3000,
-      cycle: 7000,
-      fireproof: 2,
-      lifetime: 20,
-      // 0：DC侧，1：DC+AC侧
-      isDC: 0,
-      price: 1.4,
-      deliveryCycle: 7,
-      ceritification: ['UL1973', 'UL9840A']
-    },
-    {
-      name: '宁德时代',
-      type: 'EnerC',
-      vision: 1,
-      cell: {
-        capacity: 280,
-        rate: 0.5
-      },
-      pack: {
-        configuration: {
-          parallel: 1,
-          series: 28
-        },
-        ipLevel: 54
-      },
-      rack: {
-        packNum: 8,
-        coolingConcept: 1
-      },
-      rackNum: 8,
-      normalCapacity: 3.7,
-      size: {
-        width: 6089,
-        height: 2540,
-        deep: 1980
-      },
-      weight: 35,
-      ipLevel: 54,
-      corrosionProofLevel: 5,
-      operationTemperature: {
-        low: -30,
-        high: 55
-      },
-      altitude: 3000,
-      cycle: 7000,
-      fireproof: 2,
-      lifetime: 20,
-      // 0：DC侧，1：DC+AC侧
-      isDC: 0,
-      price: 1.4,
-      deliveryCycle: 7,
-      ceritification: ['UL1973', 'UL9840A']
-    }
-  ],
+  tableData: orignalData,
   currentPage: 1,
   pageSize: 10,
   search: ''
@@ -772,6 +802,7 @@ const dialogVisible = ref(false)
 const compareVisible = ref(false)
 const editVisible = ref(false)
 const currentMessage = ref({})
+const multipleSelection = ref<Cell[]>([])
 
 const total = computed(() => state.tableData.length)
 const formatSize = (row: { size: any }) => `${row.size.width}*${row.size.height}*${row.size.deep}`
@@ -820,6 +851,36 @@ const whichType = (type: number) => {
   if (type === 2) return 'info'
   return 'error'
 }
+
+const toggleSelection = (rows?: Cell[]) => {
+  if (rows) {
+    rows.forEach((row) => {
+      // TODO: improvement typing when refactor table
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      cellTableRef.value!.toggleRowSelection(row, undefined)
+    })
+  } else {
+    cellTableRef.value!.clearSelection()
+  }
+}
+
+const handleSelectionChange = (val: Cell[]) => {
+  multipleSelection.value = val
+}
+
+// onMounted(() => {
+//   const decideData = []
+//   orignalData.forEach((val) => {
+//     const keys = val.keys()
+//     keys.forEach((key) => {
+//       if (key === 'operationTemperature') {
+//         const newKey = { operationTemperature: `${val.key.low}~${val.key.high}` }
+
+//       }
+//     })
+//   })
+// })
 
 const onSubmit = () => {
   console.log('submit!')

@@ -2,19 +2,7 @@
   <div class="table-container">
     <el-form :inline="true" :model="formInline" class="form-inline">
       <el-form-item label="厂商">
-        <el-input v-model="formInline.name" placeholder="厂商"></el-input>
-      </el-form-item>
-      <el-form-item label="容量">
-        <el-select v-model="formInline.rule" placeholder="规则" class="smallSelect">
-          <el-option label="等于" value="0"></el-option>
-          <el-option label="小于" value="1"></el-option>
-          <el-option label="大于" value="2"></el-option>
-          <el-option label="小于等于" value="3"></el-option>
-          <el-option label="大于等于" value="4"></el-option>
-          <el-option label="不等于" value="5"></el-option>
-        </el-select>
-        <el-input v-model="formInline.capacity" placeholder="容量" class="smallInput"></el-input>
-        <span>Ah</span>
+        <el-input v-model="formInline.name" placeholder="厂商" class="normalInput"></el-input>
       </el-form-item>
       <el-form-item label="倍率">
         <el-select v-model="formInline.rate" placeholder="倍率">
@@ -30,27 +18,79 @@
           <el-option label="其他" value="其他"></el-option>
         </el-select>
       </el-form-item>
+      <el-form-item label="容量">
+        <el-select v-model="formInline.rule" placeholder="规则" class="smallSelect">
+          <el-option label="等于" value="0"></el-option>
+          <el-option label="小于" value="1"></el-option>
+          <el-option label="大于" value="2"></el-option>
+          <el-option label="小于等于" value="3"></el-option>
+          <el-option label="大于等于" value="4"></el-option>
+          <el-option label="不等于" value="5"></el-option>
+        </el-select>
+        <el-input v-model="formInline.capacity" placeholder="容量" class="smallInput"></el-input>
+        <span>Ah</span>
+      </el-form-item>
       <el-form-item label="尺寸">
         <el-select v-model="formInline.size" placeholder="尺寸">
           <el-option label="71137" value="71137"></el-option>
           <el-option label="其他" value="其他"></el-option>
         </el-select>
       </el-form-item>
+      <el-form-item label="循环数">
+        <el-select v-model="formInline.rule" placeholder="规则" class="smallSelect">
+          <el-option label="等于" value="0"></el-option>
+          <el-option label="小于" value="1"></el-option>
+          <el-option label="大于" value="2"></el-option>
+          <el-option label="小于等于" value="3"></el-option>
+          <el-option label="大于等于" value="4"></el-option>
+          <el-option label="不等于" value="5"></el-option>
+        </el-select>
+        <el-input v-model="formInline.capacity" placeholder="容量" class="smallInput"></el-input>
+        <span>Cycle</span>
+      </el-form-item>
+
       <el-form-item>
         <el-button type="primary" @click="onSubmit">
           <el-icon :size="14"> <Search /> </el-icon>
           <span style="margin-right: 2px">查询</span></el-button
         >
+        <el-button @click="newVisible = true">
+          <el-icon :size="14"> <Plus /> </el-icon>
+          <span style="margin-right: 2px">新建</span></el-button
+        >
+        <el-button @click="exportVisible = true">
+          <el-icon :size="14"> <Download /> </el-icon>
+          <span style="margin-right: 2px">导出</span></el-button
+        >
+        <el-button type="success" @click="compareVisible = true">
+          <el-icon :size="14"> <Histogram /> </el-icon>
+          <span style="margin-right: 2px">对比</span></el-button
+        >
+        <el-button type="warning" @click="toggleSelection()">
+          <el-icon :size="14"><Minus /></el-icon>
+          <span style="margin-right: 2px">清除</span></el-button
+        >
+        <!-- <el-button circle @click="newVisible = true">
+          <el-icon><Plus /></el-icon>
+        </el-button>
+        <el-button circle @click="compareVisible = true">
+          <el-icon><Download /></el-icon
+        ></el-button>
+        <el-button type="success" circle @click="compareVisible = true">
+          <el-icon><Histogram /></el-icon
+        ></el-button> -->
       </el-form-item>
     </el-form>
     <el-table
-      ref="filterTableRef"
+      ref="sysTableRef"
       border
       stripe
       class="table-list"
       :data="state.tableData.filter((data) => !state.search || data.name.toLowerCase().includes(state.search.toLowerCase()))"
       style="width: 100%"
+      @selection-change="handleSelectionChange"
     >
+      <el-table-column type="selection" width="55" align="center" />
       <el-table-column prop="name" label="厂商" width="120" align="center" fixed="left"> </el-table-column>
       <el-table-column prop="capacity" label="标称容量(Ah)" width="135" align="center" sortable fixed="left"> </el-table-column>
       <el-table-column prop="voltage" label="标称电压(V)" width="100" align="center"> </el-table-column>
@@ -111,9 +151,9 @@
     >
     </el-pagination>
 
-    <div id="dialog1">
-      <el-dialog v-model="dialogVisible" width="50%" title="详情" draggable align-center destroy-on-close>
-        <Detail :current-message="(currentMessage as Cell)" />
+    <div>
+      <el-dialog v-model="dialogVisible" width="50%" draggable align-center destroy-on-close>
+        <Detail :current-message="(currentMessage as Cell)" :column="cellColumn" />
         <template #footer>
           <span class="dialog-footer">
             <el-button @click="dialogVisible = false">关闭</el-button>
@@ -123,14 +163,26 @@
       </el-dialog>
     </div>
 
-    <div id="dialog2">
-      <el-dialog id="dialog2" v-model="compareVisible" width="40%" title="电芯对比" draggable align-center destroy-on-close>
-        <CompareList :current-message="(currentMessage as Cell)" />
+    <div id="dialog">
+      <el-dialog v-model="compareVisible" width="40%" draggable align-center destroy-on-close>
+        <CompareList :current-message="(currentMessage as Cell)" :cloumn="cellColumn" />
       </el-dialog>
     </div>
 
-    <div id="dialog2">
-      <el-dialog id="dialog2" v-model="editVisible" width="40%" title="电芯信息新建" draggable align-center destroy-on-close>
+    <div>
+      <el-dialog v-model="newVisible" width="50%" draggable align-center title="电芯信息新建" destroy-on-close>
+        <NewCell />
+      </el-dialog>
+    </div>
+
+    <div id="dialog">
+      <el-dialog v-model="exportVisible" width="60%" draggable align-center title="电芯信息导出" destroy-on-close @click="sub">
+        <ExportExcel :export-msg="multipleSelection" :column="cellColumn" />
+      </el-dialog>
+    </div>
+
+    <div>
+      <el-dialog v-model="editVisible" width="40%" draggable align-center title="电芯信息编辑" destroy-on-close>
         <EditCell :current-message="currentMessage" />
       </el-dialog>
     </div>
@@ -141,11 +193,14 @@ import { computed, ref, reactive } from 'vue'
 import { Cell } from '@/interface/index'
 import Detail from '@/components/AllTable/Cell/detail.vue'
 import CompareList from '@/components/AllTable/Cell/compare.vue'
-import EditCell from '@/components/AllTable/Cell/editCell.vue'
+import EditCell from '@/components/AllTable/Cell/edit.vue'
+import NewCell from '@/components/AllTable/Cell/new.vue'
+import ExportExcel from '@/components/Excel/exportExcel.vue'
+import { ElTable } from 'element-plus'
 
 // 思考 ref 响应式和 reactive 响应式的区别； 修改对象属性值，是否会刷新数据
 // const router = useRouter()
-const filterTableRef = ref()
+const sysTableRef = ref<InstanceType<typeof ElTable>>()
 const state = reactive({
   tableData: [
     {
@@ -341,11 +396,28 @@ const formInline = reactive({
   tag: '',
   size: ''
 })
+const cellColumn = [
+  { prop: 'name', label: '厂商', width: '120', align: 'center', fixed: 'left' },
+  { prop: 'capacity', label: '标称容量(Ah)', width: '135', align: 'center', fixed: 'left' },
+  { prop: 'voltage', label: '标称电压(V)', width: '100', align: 'center', fixed: false },
+  { prop: 'rate', label: '充放倍率(P)', width: '100', align: 'center', fixed: false },
+  { prop: 'capacity_density', label: '能量密度(Wh/kg)', width: '160', align: 'center', fixed: false },
+  { prop: 'cycle', label: '循环寿命(@25℃)', width: '140', align: 'center', fixed: false },
+  { prop: 'old', label: '日历寿命(年)', width: '130', align: 'center', fixed: false },
+  { prop: 'temperature', label: '工作温度(℃)', width: '120', align: 'center', fixed: false },
+  { prop: 'weight', label: '重量(kg)', width: '100', align: 'center', fixed: false },
+  { prop: 'tag', label: '工艺', width: '100', align: 'center', fixed: false },
+  { prop: 'size', label: '尺寸(mm W*D*H)', width: '140', align: 'center', fixed: false },
+  { prop: 'certification', label: '认证', align: 'center', width: '140', fixed: false }
+]
 const total = computed(() => state.tableData.length)
 const dialogVisible = ref(false)
 const compareVisible = ref(false)
 const editVisible = ref(false)
+const newVisible = ref(false)
+const exportVisible = ref(false)
 const currentMessage = ref({})
+const multipleSelection = ref<Cell[]>([])
 
 const handleLook = (index: any, row: any) => {
   currentMessage.value = { ...row }
@@ -372,8 +444,30 @@ const whichType = (type: string) => {
   if (type === '卷绕') return 'primary'
   return 'error'
 }
+
+const toggleSelection = (rows?: Cell[]) => {
+  if (rows) {
+    rows.forEach((row) => {
+      // TODO: improvement typing when refactor table
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      sysTableRef.value!.toggleRowSelection(row, undefined)
+    })
+  } else {
+    sysTableRef.value!.clearSelection()
+  }
+}
+
+const handleSelectionChange = (val: Cell[]) => {
+  if (val.length !== 0) multipleSelection.value = val
+}
+
 const onSubmit = () => {
   console.log('submit!')
+}
+
+const sub = () => {
+  console.log(multipleSelection)
 }
 </script>
 <style lang="less" scoped>
@@ -381,12 +475,12 @@ const onSubmit = () => {
   position: relative;
   padding: 0 30px;
   .form-inline {
-    margin: 15px 0px 15px 15px;
+    margin: 0 15px;
     text-align: left;
 
-    .el-form-item {
-      margin-right: 23px !important;
-    }
+    // .el-form-item {
+    //   margin-right: 9px !important;
+    // }
   }
   .table-list {
     margin: 15px;
@@ -400,19 +494,13 @@ const onSubmit = () => {
     width: 140px;
   }
 
-  :deep(.el-dialog) {
-    padding: 10px 30px;
-    position: absolute;
-    top: 45% !important;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    overflow: auto;
+  .normalInput {
+    width: 215px;
   }
 
-  #dialog2 :deep(.el-dialog) {
+  #dialog :deep(.el-dialog) {
     height: 800px !important;
   }
-
   .myTable {
     border-collapse: collapse;
     // margin: 0 auto;
@@ -431,6 +519,15 @@ const onSubmit = () => {
       text-align: left;
     }
   }
+}
+
+:deep(.el-dialog) {
+  padding: 10px 30px;
+  position: absolute;
+  top: 50% !important;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  overflow: auto;
 }
 </style>
 @/interface

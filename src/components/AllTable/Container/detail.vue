@@ -1,44 +1,36 @@
 <template>
   <el-carousel indicator-position="outside" :autoplay="false" arrow="never">
     <el-carousel-item label="系统参数">
-      <ParameterContent :column="sysColumn" />
+      <ParameterContent :column="sysColumn" :msg="props.currentMessage" />
     </el-carousel-item>
-    <el-carousel-item label="热管理">
+    <!-- <el-carousel-item label="热管理">
       <ParameterContent :column="heatColumn" />
     </el-carousel-item>
     <el-carousel-item label="消防">
       <ParameterContent :column="fireColumn" />
     </el-carousel-item>
     <el-carousel-item label="结构">
-      <h3>结构设计模块</h3>
-      <h4>此处省略两万字</h4>
+      <ParameterContent :column="constructionColumn" />
     </el-carousel-item>
     <el-carousel-item label="电气">
-      <h3>电气设计模块</h3>
-      <h4>此处省略两万字</h4>
+      <ParameterContent :column="electrical" />
     </el-carousel-item>
     <el-carousel-item label="BMS">
-      <h3>BMS模块</h3>
-      <h4>此处省略两万字</h4>
+      <ParameterContent :column="bmsColumn" />
     </el-carousel-item>
     <el-carousel-item label="运输">
-      <h3>运输方案模块</h3>
-      <h4>此处省略两万字</h4>
+      <ParameterContent :column="transportation" />
     </el-carousel-item>
     <el-carousel-item label="售后">
-      <h3>售后服务模块</h3>
-      <h4>此处省略两万字</h4>
-    </el-carousel-item>
+      <ParameterContent :column="salesAfterService" />
+    </el-carousel-item> -->
   </el-carousel>
 </template>
 <script lang="ts" setup>
 import { defineProps } from 'vue'
-import { Cell } from '@/interface/index'
-import ParameterContent from './parameterContent.vue'
+import ParameterContent from '../parameterContent.vue'
 
-const props = defineProps<{
-  currentMessage: Cell
-}>()
+const props = defineProps(['currentMessage'])
 
 const sysColumn = [
   { prop: 'name', label: '厂商' },
@@ -153,7 +145,58 @@ const fireColumn = [
   }
 ]
 
-const construction = [
+const constructionColumn = [
+  {
+    prop: 'description',
+    label: '描述'
+  }
+]
+
+const electrical = [
+  {
+    prop: 'description',
+    label: '描述'
+  }
+]
+const bmsColumn = [
+  {
+    prop: 'brand',
+    label: '品牌'
+  },
+  {
+    prop: 'protocol',
+    label: '通信协议'
+  },
+  {
+    prop: 'framework',
+    label: '架构级别'
+  },
+  {
+    prop: 'description',
+    label: '描述'
+  }
+]
+
+const transportation = [
+  {
+    prop: 'description',
+    label: '描述'
+  }
+]
+
+const salesAfterService = [
+  {
+    prop: 'installWay',
+    label: '安装方式'
+  },
+  {
+    prop: 'accessories',
+    label: '所需配件'
+  },
+  {
+    prop: 'personNum',
+    label: '安装人数'
+  },
   {
     prop: 'description',
     label: '描述'
@@ -163,5 +206,15 @@ const construction = [
 <style lang="less" scoped>
 :deep(.el-carousel__container) {
   height: 520px !important;
+}
+
+.electricalDiagram {
+  margin: 60px auto;
+  width: 50%;
+  height: 50%;
+
+  img {
+    width: 100%;
+  }
 }
 </style>

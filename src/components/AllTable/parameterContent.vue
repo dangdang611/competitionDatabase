@@ -19,13 +19,16 @@
               <td :rowspan="c.hasOwnProperty('children') ? c.children?.length : 1" :colspan="c.hasOwnProperty('children') ? 1 : 2">{{ c.label }}</td>
               <template v-if="c.hasOwnProperty('children')">
                 <td class="tableHeader2">{{ c.children[0].label }}</td>
+                <td class="tableContent">{{ props.msg[c.children[0].prop] }}</td>
               </template>
-              <td class="tableContent">{{ 123 }}</td>
+              <template v-else>
+                <td class="tableContent">{{ props.msg[c.prop] }}</td>
+              </template>
             </tr>
             <template v-if="c.hasOwnProperty('children') && c.children[1]">
               <tr v-for="(child, index) in c.children?.slice(1)" :key="index">
                 <td class="tableHeader">{{ child.label }}</td>
-                <td class="tableContent">{{ 123 }}</td>
+                <td class="tableContent">{{ props.msg[child.prop] }}</td>
               </tr>
             </template>
           </template>
@@ -39,7 +42,8 @@
 import img from '@/assets/sys.png'
 import { defineProps } from 'vue'
 
-const props = defineProps(['column'])
+const props = defineProps(['msg', 'column'])
+console.log(props.msg)
 </script>
 
 <style lang="less" scoped>
