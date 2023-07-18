@@ -126,17 +126,17 @@
       </el-table-column>
       <el-table-column label="Pack" align="center">
         <el-table-column prop="pack.configuration" label="配置" width="100" align="center">
-          <template #default="scope">
+          <!-- <template #default="scope">
             <span>{{ scope.row.pack.configuration.parallel + 'P' + scope.row.pack.configuration.series + 'S' }}</span>
-          </template>
+          </template> -->
         </el-table-column>
         <el-table-column prop="pack.ipLevel" label="防护等级" width="120" align="center" sortable />
       </el-table-column>
       <el-table-column label="Rack" align="center">
         <el-table-column prop="rack.packNum" label="配置" width="100" align="center">
-          <template #default="scope">
+          <!-- <template #default="scope">
             <span>{{ scope.row.pack.configuration.parallel + 'P' + scope.row.rack.packNum * scope.row.pack.configuration.series + 'S' }}</span>
-          </template>
+          </template> -->
         </el-table-column>
         <el-table-column
           align="center"
@@ -157,12 +157,12 @@
       </el-table-column>
       <el-table-column label="Container" align="center">
         <el-table-column prop="rackNum" label="配置" width="100" align="center">
-          <template #default="scope">
+          <!-- <template #default="scope">
             <span>{{ scope.row.rackNum * scope.row.pack.configuration.parallel + 'P' + scope.row.rack.packNum * scope.row.pack.configuration.series + 'S' }}</span>
-          </template>
+          </template> -->
         </el-table-column>
         <el-table-column prop="normalCapacity" label="额定容量(MWh)" width="150" align="center" sortable />
-        <el-table-column prop="size" label="单箱尺寸(mm W*D*H)" width="180" align="center" :formatter="formatSize" />
+        <el-table-column prop="size" label="单箱尺寸(mm W*D*H)" width="180" align="center" />
         <el-table-column prop="weight" label="单箱重量(T)" width="130" align="center" sortable />
         <el-table-column prop="ipLevel" label="防护等级" width="120" align="center" sortable>
           <template #default="scope">
@@ -174,7 +174,7 @@
             <span>{{ 'C' + scope.row.corrosionProofLevel }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="operationTemperature" label="运行温度(℃)" width="120" align="center" :formatter="formatTemp" />
+        <el-table-column prop="operationTemperature" label="运行温度(℃)" width="120" align="center" />
         <el-table-column prop="altitude" label="最高海拔(m)" width="130" align="center" sortable />
         <el-table-column prop="cycle" label="循环寿命" width="120" align="center" sortable />
         <el-table-column prop="fireproof" label="耐火时长(h)" width="130" align="center" sortable />
@@ -261,6 +261,7 @@ import { computed, ref, reactive, onMounted } from 'vue'
 import { Cell } from '@/interface/index'
 import Detail from '@/components/AllTable/Container/detail.vue'
 import { ElTable } from 'element-plus'
+import formatContainer from '@/utils/formatterData'
 
 const orignalData = [
   {
@@ -785,11 +786,13 @@ const orignalData = [
 // const router = useRouter()
 const cellTableRef = ref<InstanceType<typeof ElTable>>()
 const state = reactive({
-  tableData: orignalData,
+  tableData: [],
   currentPage: 1,
   pageSize: 10,
   search: ''
 })
+state.tableData = formatContainer(orignalData)
+
 const formInline = reactive({
   name: '',
   rule: '',
@@ -805,8 +808,6 @@ const currentMessage = ref({})
 const multipleSelection = ref<Cell[]>([])
 
 const total = computed(() => state.tableData.length)
-const formatSize = (row: { size: any }) => `${row.size.width}*${row.size.height}*${row.size.deep}`
-const formatTemp = (row: { operationTemperature: any }) => `${row.operationTemperature.low}~${row.operationTemperature.high}`
 const formatVision = (row: { vision: number }) => {
   switch (row.vision) {
     case 0:
@@ -868,19 +869,6 @@ const toggleSelection = (rows?: Cell[]) => {
 const handleSelectionChange = (val: Cell[]) => {
   multipleSelection.value = val
 }
-
-// onMounted(() => {
-//   const decideData = []
-//   orignalData.forEach((val) => {
-//     const keys = val.keys()
-//     keys.forEach((key) => {
-//       if (key === 'operationTemperature') {
-//         const newKey = { operationTemperature: `${val.key.low}~${val.key.high}` }
-
-//       }
-//     })
-//   })
-// })
 
 const onSubmit = () => {
   console.log('submit!')

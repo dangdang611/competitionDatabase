@@ -38,6 +38,7 @@ const sysColumn = [
   { prop: 'vision', label: '版本' },
   {
     label: 'Cell',
+    prop: 'cell',
     children: [
       { prop: 'capacity', label: '电芯容量' },
       { prop: 'rate', label: '充放倍率' }
@@ -45,37 +46,34 @@ const sysColumn = [
   },
   {
     label: 'Pack',
+    prop: 'pack',
     children: [
-      { props: 'configuration', label: '配置' },
-      { props: 'ipLevel', label: '防护等级' }
+      { prop: 'configuration', label: '配置' },
+      { prop: 'ipLevel', label: '防护等级' }
     ]
   },
   {
     label: 'Rack',
+    prop: 'rack',
     children: [
-      { props: 'configuration', label: '配置' },
-      { props: 'coolingConcept', label: '冷却方式' }
+      { prop: 'packNum', label: '配置' },
+      { prop: 'coolingConcept', label: '冷却方式' }
     ]
   },
-  {
-    label: 'Contanier',
-    children: [
-      { props: 'configuration', label: '配置' },
-      { props: 'normalCapacity', label: '额定容量(MWh)' },
-      { prop: 'size', label: '尺寸(mm W*D*H)' },
-      { prop: 'weight', label: '单箱重量(T)' },
-      { props: 'ipLevel', label: '防护等级' },
-      { props: 'corrosionProofLevel', label: '防腐等级' },
-      { prop: 'operationTemperature', label: '运行温度(℃)' },
-      { prop: 'altitude', label: '最高海拔(m)' },
-      { prop: 'cycle', label: '循环寿命' },
-      { prop: 'fireproof', label: '耐火时长(h)' },
-      { prop: 'lifetime', label: '工况寿命' },
-      { prop: 'isDC', label: '直/交流' },
-      { prop: 'price', label: '报价(Wh/元)' },
-      { prop: 'deliveryCycle', label: '交付周期' }
-    ]
-  }
+  { prop: 'rackNum', label: '配置' },
+  { prop: 'normalCapacity', label: '额定容量(MWh)' },
+  { prop: 'size', label: '尺寸(mm W*D*H)' },
+  { prop: 'weight', label: '单箱重量(T)' },
+  { prop: 'ipLevel', label: '防护等级' },
+  { prop: 'corrosionProofLevel', label: '防腐等级' },
+  { prop: 'operationTemperature', label: '运行温度(℃)' },
+  { prop: 'altitude', label: '最高海拔(m)' },
+  { prop: 'cycle', label: '循环寿命' },
+  { prop: 'fireproof', label: '耐火时长(h)' },
+  { prop: 'lifetime', label: '工况寿命' },
+  { prop: 'isDC', label: '直/交流' },
+  { prop: 'price', label: '报价(Wh/元)' },
+  { prop: 'deliveryCycle', label: '交付周期' }
 ]
 
 const heatColumn = [

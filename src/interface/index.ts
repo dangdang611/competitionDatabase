@@ -107,7 +107,7 @@ export interface Container {
   transportation: {
     plan: string
   }
-  salsAfterService: {
+  salesAfterService: {
     installWay: string
     accessories: string[]
     personNum: number
